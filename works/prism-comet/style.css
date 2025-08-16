@@ -24,12 +24,20 @@ body{margin:0;background:#060810;overflow:hidden;cursor:none;font-family:ui-sans
 @keyframes swirl{0%{filter:hue-rotate(0deg);transform:rotate(0turn) scale(1.2)}50%{filter:hue-rotate(60deg);transform:rotate(.5turn) scale(1.25)}100%{filter:hue-rotate(120deg);transform:rotate(1turn) scale(1.2)}}
 #fx{position:fixed;inset:0;z-index:5}
 .comet{position:fixed;left:50vw;top:50vh;transform:translate(-50%,-50%);pointer-events:none;z-index:10}
-.core{width:var(--size);height:var(--size);border-radius:50%;position:relative;background:
-radial-gradient(circle at 50% 50%,#fff 0 22%,hsl(var(--h) 95% 65%) 36%,transparent 60%),
-conic-gradient(from 0deg,
-hsl(var(--h)95% 60%/.38),hsl(calc(var(--h)+60)95% 60%/.38),hsl(calc(var(--h)+120)95% 60%/.38),
-hsl(calc(var(--h)+180)95% 60%/.38),hsl(calc(var(--h)+240)95% 60%/.38),hsl(calc(var(--h)+300)95% 60%/.38),
-hsl(calc(var(--h)+360)95% 60%/.38));box-shadow:0 0 16px hsl(var(--h)95% 60%/.55),0 0 34px hsl(calc(var(--h)+180)95% 60%/.35);animation:breathe 1.6s ease-in-out infinite;isolation:isolate}
+.core{width:var(--size);height:var(--size);border-radius:50%;position:relative;
+  background:
+    radial-gradient(circle at 50% 50%, #fff 0 22%, hsl(var(--h) 95% 65%) 36%, transparent 60%),
+    conic-gradient(from 0deg,
+      hsl(var(--h)           95% 60% / .40),
+      hsl(calc(var(--h)+45)  95% 60% / .40),
+      hsl(calc(var(--h)+90)  95% 60% / .40),
+      hsl(calc(var(--h)+135) 95% 60% / .40),
+      hsl(calc(var(--h)+180) 95% 60% / .40),
+      hsl(calc(var(--h)+225) 95% 60% / .40),
+      hsl(calc(var(--h)+270) 95% 60% / .40),
+      hsl(calc(var(--h)+315) 95% 60% / .40),
+      hsl(calc(var(--h)+360) 95% 60% / .40));
+}
 .core::before,.core::after{content:"";position:absolute;inset:-40% -40%;border-radius:50%;background:radial-gradient(60% 60% at 35% 30%,#fff6,transparent 60%);mix-blend-mode:screen;filter:blur(10px)}
 .core::after{inset:-15% -15%;background:radial-gradient(40% 40% at 70% 70%,#fff4,transparent 70%);filter:blur(6px)}
 @keyframes breathe{0%,100%{transform:scale(1)}50%{transform:scale(1.07)}}
