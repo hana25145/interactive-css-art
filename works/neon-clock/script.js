@@ -5,176 +5,113 @@
   const dateEl= document.getElementById('date');
   const pill  = document.getElementById('pill');
 
-  // ===== Options / State =====
-  let is24h = true;          // 클릭으로 토글
-  let hue   = 210;           // 휠로 조절
-  let themeIndex = 0;        // T 키로 순환
-  const themes = ["", "sunset", "mint", "violet"]; // "" = 기본
+  // ===== state =====
+  let is24h = true;
+  let hue = 210;
+  const themes = ["", "sunset", "mint", "violet"];
+  let themeIndex = 0;
 
-  // 시간 스크럽(오프셋) 상태
-  let dragging = false;
-  let offsetSec = 0;         // 드래그로 ± 변경 (더블클릭 리셋)
-
-  // 마우스 패럴럭스용
-  function onPointer(e){
-    const rect = stage.getBoundingClientRect();
-    const mx = ((e.clientX - rect.left) / rect.width) * 100;
-    const my = ((e.clientY - rect.top)  / rect.height) * 100;
+  // parallax
+  addEventListener('pointermove', (e)=>{
+    const r = stage.getBoundingClientRect();
+    const mx = ((e.clientX - r.left)/r.width)*100;
+    const my = ((e.clientY - r.top)/r.height)*100;
     root.style.setProperty('--mx', mx.toFixed(2));
     root.style.setProperty('--my', my.toFixed(2));
-  }
-  addEventListener('pointermove', onPointer, { passive:true });
+  }, {passive:true});
 
-  // ===== Build flip digits =====
-  // 한 자리 flip 카드 DOM 생성
-  const createFlip = (initial="0") => {
-    const flip = document.createElement('div');
-    flip.className = 'flip';
-    flip.dataset.value = initial;
-
-    const panel = document.createElement('div');
-    panel.className = 'panel';
-
-    const top = document.createElement('div');
-    top.className = 'half top';
-    top.innerHTML = `<div class="value">${initial}</div>`;
-
-    const bot = document.createElement('div');
-    bot.className = 'half bot';
-    bot.innerHTML = `<div class="value">${initial}</div>`;
-
-    const backTop = document.createElement('div');
-    backTop.className = 'back-top';
-    backTop.innerHTML = `<div class="value">${initial}</div>`;
-
-    const backBot = document.createElement('div');
-    backBot.className = 'back-bot';
-    backBot.innerHTML = `<div class="value">${initial}</div>`;
-
-    panel.append(top, bot, backTop, backBot);
-    flip.append(panel);
+  // build digits (2 per group)
+  const makeFlip = (v="0")=>{
+    const flip = document.createElement('div'); flip.className='flip'; flip.dataset.value=v;
+    const panel=document.createElement('div'); panel.className='panel';
+    const top = document.createElement('div'); top.className='half top'; top.innerHTML = `<div class="value">${v}</div>`;
+    const bot = document.createElement('div'); bot.className='half bot'; bot.innerHTML = `<div class="value">${v}</div>`;
+    const backTop = document.createElement('div'); backTop.className='back-top'; backTop.innerHTML = `<div class="value">${v}</div>`;
+    const backBot = document.createElement('div'); backBot.className='back-bot'; backBot.innerHTML = `<div class="value">${v}</div>`;
+    panel.append(top, bot, backTop, backBot); flip.append(panel);
     return flip;
   };
-
-  // HH:MM:SS 그룹 각각 2자리씩 구성
   const groups = [...clock.querySelectorAll('.group')];
   const digits = [];
-  groups.forEach(g => {
-    const d1 = createFlip("0");
-    const d2 = createFlip("0");
-    g.append(d1, d2);
-    digits.push(d1, d2);
-  });
+  groups.forEach(g=>{ const a=makeFlip("0"), b=makeFlip("0"); g.append(a,b); digits.push(a,b); });
 
-  // ===== Flip update =====
+  // safe flip (no stacking, no ghost)
   function setFlip(flip, newVal){
     const cur = flip.dataset.value;
-    if (cur === newVal) return;
+    if (cur === newVal || flip.dataset.animating === "1") return;
 
-    // 값 세팅 (top/bot/back에 새 값 반영)
-    const [top, bot, backTop, backBot] = [
-      flip.querySelector('.top .value'),
-      flip.querySelector('.bot .value'),
-      flip.querySelector('.back-top .value'),
-      flip.querySelector('.back-bot .value')
-    ];
-    // back 면에 새 값
-    backTop.textContent = newVal;
-    backBot.textContent = newVal;
+    const topVal = flip.querySelector('.top .value');
+    const botVal = flip.querySelector('.bot .value');
+    const backTopVal = flip.querySelector('.back-top .value');
+    const backBotVal = flip.querySelector('.back-bot .value');
+
+    // 새 값은 back 면에만 먼저 세팅
+    backTopVal.textContent = newVal;
+    backBotVal.textContent = newVal;
 
     // 애니메이션 트리거
-    flip.classList.remove('play');
-    // 강제 리플로우로 re-start
-    void flip.offsetWidth;
-    flip.classList.add('play');
+    flip.dataset.animating = "1";
+    flip.classList.remove('play'); void flip.offsetWidth; flip.classList.add('play');
 
-    // 애니 종료 후 실제 값 교체
+    // 애니 끝나면 앞면 교체 & 초기화
     const onEnd = () => {
-      top.textContent = newVal;
-      bot.textContent = newVal;
+      topVal.textContent = newVal;
+      botVal.textContent = newVal;
       flip.dataset.value = newVal;
+      flip.classList.remove('play');
+      flip.dataset.animating = "";
       flip.removeEventListener('animationend', onEnd);
     };
-    flip.addEventListener('animationend', onEnd, { once:true });
+    flip.addEventListener('animationend', onEnd);
   }
 
-  // ===== Time utilities =====
-  const pad2 = (n)=> String(n).padStart(2,'0');
-
-  // 드래그 스크럽
-  let dragStartX = 0, dragStartOffset = 0;
-  stage.addEventListener('pointerdown', e => {
-    dragging = true;
-    dragStartX = e.clientX;
-    dragStartOffset = offsetSec;
-  });
-  addEventListener('pointerup',  ()=> dragging=false);
-  addEventListener('pointercancel', ()=> dragging=false);
-  addEventListener('pointermove', e=>{
-    if(!dragging) return;
-    const dx = e.clientX - dragStartX;
-    // 1px ≈ 0.1초로 매핑 (천천히 스크럽)
-    offsetSec = Math.max(-24*3600, Math.min(24*3600, Math.round(dragStartOffset + dx*0.1)));
-  });
-
-  // 더블클릭 리셋
-  stage.addEventListener('dblclick', ()=> offsetSec = 0);
-
-  // 클릭: 12/24h 토글
-  stage.addEventListener('click', (e)=>{
-    // 드래그 막 끝난 클릭은 무시(작은 이동량 무시)
-    if (Math.abs(e.detail) > 1 && dragging) return;
-    is24h = !is24h;
-  });
-
-  // 휠: Hue 조절
+  // interactions
+  stage.addEventListener('click', ()=> { is24h = !is24h; });
   addEventListener('wheel', (e)=>{
-    hue = (hue + (e.deltaY>0 ? -6 : 6) + 360) % 360;
+    hue = (hue + (e.deltaY>0?-6:6) + 360) % 360;
     root.style.setProperty('--hue', hue);
     pill.textContent = `Hue ${Math.round(hue)}°`;
-    pill.style.opacity = 1;
-    clearTimeout(pill._t);
+    pill.style.opacity = 1; clearTimeout(pill._t);
     pill._t = setTimeout(()=> pill.style.opacity = .0, 900);
-  }, { passive:true });
-
-  // T: 테마 순환
+  }, {passive:true});
   addEventListener('keydown', (e)=>{
     if (e.key.toLowerCase() === 't'){
-      themeIndex = (themeIndex + 1) % themes.length;
-      const theme = themes[themeIndex];
-      if (theme) root.setAttribute('data-theme', theme);
+      themeIndex = (themeIndex+1)%themes.length;
+      const th = themes[themeIndex];
+      if (th) root.setAttribute('data-theme', th);
       else root.removeAttribute('data-theme');
     }
   });
 
-  // ===== Main loop =====
+  // time loop — align to real seconds (no drift)
+  const pad2 = n => String(n).padStart(2,'0');
   let lastSec = -1;
-  function tick(){
-    const now = new Date(Date.now() + offsetSec*1000);
-    const s = now.getSeconds();
-    const m = now.getMinutes();
-    let h = now.getHours();
 
-    // 12h 변환
-    const hh = is24h ? h : ((h%12) || 12);
+  function render(nowDate){
+    const s = nowDate.getSeconds();
+    const m = nowDate.getMinutes();
+    let h  = nowDate.getHours();
+    const hh = is24h ? h : ((h%12)||12);
 
-    // 날짜 텍스트
-    const weekday = ['일','월','화','수','목','금','토'][now.getDay()];
-    dateEl.textContent = `${now.getFullYear()}.${pad2(now.getMonth()+1)}.${pad2(now.getDate())} (${weekday})`;
+    // date text
+    const w = ['일','월','화','수','목','금','토'][nowDate.getDay()];
+    dateEl.textContent = `${nowDate.getFullYear()}.${pad2(nowDate.getMonth()+1)}.${pad2(nowDate.getDate())} (${w})`;
 
-    // 자리값 문자열
-    const H = pad2(hh), M = pad2(m), S = pad2(s);
-    const arr = (H+M+S).split('');
-
-    // 초가 바뀔 때만 flip 트리거 (불필요한 애니 회피)
     if (s !== lastSec){
-      for (let i=0;i<digits.length;i++){
-        setFlip(digits[i], arr[i]);
-      }
+      const str = (pad2(hh) + pad2(m) + pad2(s)).split('');
+      for (let i=0;i<digits.length;i++) setFlip(digits[i], str[i]);
       lastSec = s;
     }
+  }
 
-    requestAnimationFrame(tick);
+  // rAF ticker aligned to next second
+  function tick(){
+    const now = new Date();
+    render(now);
+    // 다음 전체 초까지 남은 시간을 계산해 타이밍을 보정
+    const ms = now.getMilliseconds();
+    const delay = 1000 - ms + 2; // 약간 여유
+    setTimeout(()=>requestAnimationFrame(tick), delay);
   }
   tick();
 })();
