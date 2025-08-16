@@ -65,10 +65,32 @@ body {
   backface-visibility: hidden;
 }
 
-.top { top: 0; z-index: 3; border-bottom: 1px solid #ffffff1a; }
-.bot { bottom: 0; z-index: 1; }
-.back-top { top: 0; transform-origin: bottom; transform: rotateX(180deg); z-index: 2; }
-.back-bot { bottom: 0; transform-origin: top; transform: rotateX(-180deg); z-index: 2; }
+.top {
+  top: 0;
+  z-index: 4;              /* 더 확실히 앞에 두기 */
+  border-bottom: 1px solid #ffffff1a;
+}
+
+.bot {
+  bottom: 0;
+  z-index: 1;
+}
+
+.back-top {
+  top: 0;
+  transform-origin: bottom;
+  transform: rotateX(180deg);
+  z-index: 3;               /* 회전 중에만 보임 */
+  backface-visibility: hidden;
+}
+
+.back-bot {
+  bottom: 0;
+  transform-origin: top;
+  transform: rotateX(-180deg);
+  z-index: 2;
+  backface-visibility: hidden;
+}
 
 .flip.play .top { animation: flipTop var(--flip-speed) var(--flip-ease) both; }
 .flip.play .back-bot { animation: flipBot var(--flip-speed) var(--flip-ease) both; }
