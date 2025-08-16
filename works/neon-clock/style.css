@@ -1,120 +1,52 @@
-:root {
-  --flip-speed: 0.6s;
-  --flip-ease: cubic-bezier(.6, .2, .3, 1.3);
-  --glow-strong: 0 0 6px #9cf, 0 0 18px #0ff6;
+:root{
+  --hue: 200; --sat: 92%; --lit: 60%;
+  --mx: 50; --my: 50;
+  --flip-speed: .62s;
+  --flip-ease: cubic-bezier(.2,.7,.2,1);
+  --bg: #0a0e18;
+
+  --glow-strong: 0 0 26px hsl(var(--hue) var(--sat) var(--lit) / .85),
+                 0 0 56px hsl(calc(var(--hue)+180) var(--sat) var(--lit) / .35);
+  --glow-soft:   0 0 16px hsl(var(--hue) var(--sat) var(--lit) / .45),
+                 0 0 34px hsl(calc(var(--hue)+180) var(--sat) var(--lit) / .25);
+}
+:root[data-theme="sunset"]{ --hue: 18; }
+:root[data-theme="mint"]  { --hue: 160; }
+:root[data-theme="violet"]{ --hue: 276; }
+
+*{ box-sizing:border-box }
+html,body{ height:100% }
+body{
+  margin:0; background:var(--bg); color:#e9ecff; overflow:hidden; cursor:none;
+  font-family:ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans KR", Arial;
+  -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
 }
 
-body {
-  margin: 0;
-  background: radial-gradient(circle at 50% 30%, #0d1321, #05070c 80%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
-  font-family: system-ui, sans-serif;
-  color: white;
+/* 배경 패럴럭스 */
+.stage{
+  position:fixed; inset:0; display:grid; place-items:center;
+  background:
+    radial-gradient(120vmax 120vmax at calc(var(--mx)*1%) calc((var(--my)-30)*1%), hsl(calc(var(--hue)+40) 70% 18% / .35), transparent 55%),
+    radial-gradient(120vmax 120vmax at calc((100 - var(--mx))*1%) calc((var(--my)+30)*1%), hsl(calc(var(--hue)+220)70% 14% / .35), transparent 55%),
+    var(--bg);
 }
 
-#clock {
-  display: flex;
-  align-items: center;
-  gap: 0.4em;
-  font-size: clamp(40px, 14vmin, 150px);
-  perspective: 1000px;
+/* 돌아가기 */
+.back{ position:fixed; left:12px; top:12px; text-decoration:none; z-index:40 }
+
+/* 시계 레이아웃 */
+.clock{
+  display:flex; align-items:center; gap:min(3vmin,32px);
+  filter: drop-shadow(var(--glow-soft)); perspective: 1200px;
+}
+.sep{
+  font-size: clamp(28px, 9vmin, 64px);
+  line-height: 1; opacity:.9; text-shadow: var(--glow-soft);
 }
 
-.separator {
-  margin: 0 0.2em;
-  color: #88f;
-  text-shadow: var(--glow-strong);
-}
+/* 그룹(두 자리) */
+.group{ display:flex; gap:min(1.8vmin,16px) }
 
-.group {
-  position: relative;
-  width: 1em;
-  height: 1.4em;
-}
-
-.flip {
-  position: absolute;
-  inset: 0;
-  perspective: 900px;
-}
-
-.panel {
-  position: absolute;
-  inset: 0;
-  border-radius: 0.12em;
-  background: linear-gradient(180deg, #222, #111);
-  overflow: hidden;
-  box-shadow: inset 0 -0.3em 0.6em #0008;
-}
-
-.half,
-.back-top,
-.back-bot {
-  position: absolute;
-  left: 0; right: 0;
-  height: 50%;
-  display: grid;
-  place-items: center;
-  font-weight: 800;
-  font-size: 1em;
-  color: #f6f7ff;
-  text-shadow: var(--glow-strong);
-  backface-visibility: hidden;
-}
-
-.top {
-  top: 0;
-  z-index: 4;              /* 더 확실히 앞에 두기 */
-  border-bottom: 1px solid #ffffff1a;
-}
-
-.bot {
-  bottom: 0;
-  z-index: 1;
-}
-
-.back-top {
-  top: 0;
-  transform-origin: bottom;
-  transform: rotateX(180deg);
-  z-index: 3;               /* 회전 중에만 보임 */
-  backface-visibility: hidden;
-}
-
-.back-bot {
-  bottom: 0;
-  transform-origin: top;
-  transform: rotateX(-180deg);
-  z-index: 2;
-  backface-visibility: hidden;
-}
-
-.flip.play .top { animation: flipTop var(--flip-speed) var(--flip-ease) both; }
-.flip.play .back-bot { animation: flipBot var(--flip-speed) var(--flip-ease) both; }
-
-@keyframes flipTop {
-  0% { transform: rotateX(0); }
-  100% { transform: rotateX(-180deg); }
-}
-@keyframes flipBot {
-  0% { transform: rotateX(180deg); }
-  100% { transform: rotateX(0); }
-}
-
-#date {
-  margin-top: 1rem;
-  text-align: center;
-  font-size: 1.2rem;
-  color: #ccc;
-}
-
-#pill {
-  margin-top: 0.6rem;
-  font-size: 0.9rem;
-  color: #0ff;
-  cursor: pointer;
-  user-select: none;
-}
+/* ===== 핵심: 한 자리 카드 구조 ===== */
+.flip{
+  position:relative; width:clamp(40px, 14v
