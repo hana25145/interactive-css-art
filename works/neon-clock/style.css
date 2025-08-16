@@ -49,4 +49,51 @@ body{
 
 /* ===== 핵심: 한 자리 카드 구조 ===== */
 .flip{
-  position:relative; width:clamp(40px, 14v
+  position:relative; width:clamp(40px, 14vmin, 150px); height:clamp(54px, 18vmin, 190px);
+  perspective: 900px; isolation:isolate; /* 겹침/잔상 방지 */
+}
+.panel{
+  position:absolute; inset:0; border-radius:14px; overflow:hidden; z-index:0;
+  background:linear-gradient(180deg,#111826,#0a0f19); border:1px solid #ffffff10;
+  box-shadow: inset 0 -60px 120px #0006, inset 0 40px 80px #fff1;
+}
+
+/* 각 절반 + 뒤집기용 절반 : 정확히 "절반 높이"만 보이게 */
+.half, .back-top, .back-bot{
+  position:absolute; left:0; width:100%; height:50%;
+  display:grid; place-items:center; overflow:hidden;
+  font-weight:800; letter-spacing:.04em; color:#f6f7ff; text-shadow: var(--glow-strong);
+  backface-visibility: hidden; transform-style: preserve-3d;
+}
+.top{ top:0; z-index:4; border-bottom:1px solid #ffffff14; }
+.bot{ bottom:0; z-index:1; }
+.back-top{ top:0; z-index:3; transform-origin: bottom; transform: rotateX(180deg); border-bottom:1px solid #ffffff14; }
+.back-bot{ bottom:0; z-index:2; transform-origin: top;   transform: rotateX(-180deg); }
+
+/* 숫자 타이포는 중앙 정렬 + 크게 */
+.val{ font-size: clamp(32px, 12vmin, 140px); line-height: 1; }
+
+/* 플립 애니메이션(겹침 방지용 both) */
+.flip.play .top{      animation: flipTop var(--flip-speed) var(--flip-ease) both; }
+.flip.play .back-bot{ animation: flipBot var(--flip-speed) var(--flip-ease) both; }
+
+@keyframes flipTop{
+  0%   { transform: rotateX(0deg); }
+  100% { transform: rotateX(-180deg); }
+}
+@keyframes flipBot{
+  0%   { transform: rotateX(-180deg); }
+  100% { transform: rotateX(0deg); }
+}
+
+/* 날짜 + HUD */
+.date{ margin-top:16px; font-size: clamp(12px, 2.3vmin, 16px); letter-spacing:.04em; opacity:.85; filter: drop-shadow(var(--glow-soft)); }
+.hud{ position:fixed; right:12px; bottom:10px; display:grid; gap:6px; z-index:30; }
+.hud #pill{
+  justify-self:end; background:#0e1322; border:1px solid #ffffff1a; border-radius:999px; padding:6px 10px;
+  font: 12px/1.2 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; color:#cfe2ff;
+  box-shadow: var(--glow-soft); opacity:.9; user-select:none;
+}
+
+/* 접근성 */
+@media (prefers-reduced-motion:reduce){ :root{ --flip-speed:.9s } }
