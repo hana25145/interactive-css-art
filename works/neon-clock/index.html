@@ -3,28 +3,24 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Neon Clock — interactive</title>
+  <title>Neon Clock — clean flip</title>
   <link rel="stylesheet" href="../../assets/css/base.css" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <a href="../../index.html" class="badge back-link">← Gallery</a>
 
-  <main class="stage" id="stage" aria-label="Interactive Neon Clock">
-    <div class="clock" id="clock" aria-live="polite">
-      <!-- 시:분:초 (각 자리 flip 카드가 JS로 채워짐) -->
+  <main class="stage" id="stage">
+    <div class="clock" id="clock">
       <div class="group" data-unit="hours"></div>
       <div class="sep">:</div>
       <div class="group" data-unit="minutes"></div>
       <div class="sep">:</div>
       <div class="group" data-unit="seconds"></div>
     </div>
-
     <div class="date" id="date"></div>
-
-    <div class="hud" id="hud">
-      <div><strong>Click</strong> 12/24h · <strong>Wheel</strong> 색상 · <strong>Drag</strong> 스크럽 · <strong>Double-Click</strong> 리셋 · <strong>T</strong> 테마</div>
-      <div class="pill" id="pill">Hue 210°</div>
+    <div class="hud">
+      <div class="pill" id="pill">Hue 210° • Click=12/24 • Wheel=Hue • Drag=Scrub • T=Theme</div>
     </div>
   </main>
 
