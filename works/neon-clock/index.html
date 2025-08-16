@@ -1,29 +1,25 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Neon Clock — clean flip</title>
-  <link rel="stylesheet" href="../../assets/css/base.css" />
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8">
+  <title>Neon Flip Clock</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="script.js" defer></script>
 </head>
 <body>
-  <a href="../../index.html" class="badge back-link">← Gallery</a>
-
-  <main class="stage" id="stage">
-    <div class="clock" id="clock">
-      <div class="group" data-unit="hours"></div>
-      <div class="sep">:</div>
-      <div class="group" data-unit="minutes"></div>
-      <div class="sep">:</div>
-      <div class="group" data-unit="seconds"></div>
+  <div id="stage">
+    <div id="clock">
+      <div class="group" id="h1"></div>
+      <div class="group" id="h2"></div>
+      <div class="separator">:</div>
+      <div class="group" id="m1"></div>
+      <div class="group" id="m2"></div>
+      <div class="separator">:</div>
+      <div class="group" id="s1"></div>
+      <div class="group" id="s2"></div>
     </div>
-    <div class="date" id="date"></div>
-    <div class="hud">
-      <div class="pill" id="pill">Hue 210° • Click=12/24 • Wheel=Hue • Drag=Scrub • T=Theme</div>
-    </div>
-  </main>
-
-  <script src="script.js" defer></script>
+    <div id="date"></div>
+    <div id="pill">24H</div>
+  </div>
 </body>
 </html>
