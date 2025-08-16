@@ -1,25 +1,29 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <title>Neon Flip Clock</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Neon Flip Clock — clean</title>
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="style.css" />
   <script src="script.js" defer></script>
 </head>
 <body>
-  <div id="stage">
-    <div id="clock">
-      <div class="group" id="h1"></div>
-      <div class="group" id="h2"></div>
-      <div class="separator">:</div>
-      <div class="group" id="m1"></div>
-      <div class="group" id="m2"></div>
-      <div class="separator">:</div>
-      <div class="group" id="s1"></div>
-      <div class="group" id="s2"></div>
+  <a href="../../index.html" class="back">← Gallery</a>
+
+  <main class="stage" id="stage" aria-label="Interactive Neon Flip Clock">
+    <div class="clock" id="clock" aria-live="polite">
+      <div class="group" data-unit="hours"></div>
+      <div class="sep">:</div>
+      <div class="group" data-unit="minutes"></div>
+      <div class="sep">:</div>
+      <div class="group" data-unit="seconds"></div>
     </div>
-    <div id="date"></div>
-    <div id="pill">24H</div>
-  </div>
+    <div class="date" id="date"></div>
+    <div class="hud">
+      <span id="pill">24H</span>
+      <small>Click 12/24 • Wheel Hue • T Theme</small>
+    </div>
+  </main>
 </body>
 </html>
