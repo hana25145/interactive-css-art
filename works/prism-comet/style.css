@@ -1,68 +1,115 @@
-
 :root{
-  --x: 50vw; --y: 50vh;         /* 혜성 위치 */
-  --h: 200;                     /* 기본 hue */
-  --size: 22px;                 /* 코어 크기 */
+  --h: 210;           /* base hue */
+  --size: 22px;       /* 코어 지름 */
+  --ring: 44px;       /* 외곽 링 지름 */
+  --glow: 28px;       /* 글로우 강도 */
 }
-html,body{ height:100%; margin:0; background:#07080d; overflow:hidden; cursor:none; }
-.bg{ position:fixed; inset:0;
-  background:
-    radial-gradient(120vmax 120vmax at 85% 10%, #10203822, transparent 60%),
-    radial-gradient(120vmax 120vmax at 10% 90%, #180f3b22, transparent 60%),
-    #06070b;
-  filter: saturate(1.05) contrast(1.02);
+
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0;
+  background: #060810;
+  overflow: hidden;
+  cursor: none; /* 자체 커서 사용 */
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans KR", Arial;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
-.comet{ position:fixed; left:var(--x); top:var(--y); transform:translate(-50%,-50%); pointer-events:none; }
-.core{
-  width:var(--size); height:var(--size); border-radius:50%; position:relative;
+
+/* 돌아가기 버튼 */
+.back-link {
+  position: fixed; left: 12px; top: 12px; text-decoration: none; z-index: 30;
+}
+
+/* ===== Aurora (CSS only) ===== */
+.aurora { position: fixed; inset: -20vmax; filter: blur(18px) saturate(1.15); z-index: 0; }
+.aurora i {
+  position: absolute; inset: 0; opacity: .45; mix-blend-mode: screen; animation: swirl 42s linear infinite;
   background:
-    radial-gradient(circle at 50% 50%, white 0 20%, hsl(var(--h) 95% 65%) 35%, transparent 60%),
+    conic-gradient(from 0deg at 50% 50%,
+      hsl(calc(var(--h) +  0)  90% 60% / .08),
+      hsl(calc(var(--h) + 40)  90% 60% / .10),
+      hsl(calc(var(--h) + 80)  90% 60% / .12),
+      hsl(calc(var(--h) + 120) 90% 60% / .10),
+      hsl(calc(var(--h) + 160) 90% 60% / .08),
+      transparent 70%);
+}
+.aurora i:nth-child(1){ transform: rotate(0deg)   scale(1.3); animation-duration: 56s; }
+.aurora i:nth-child(2){ transform: rotate(90deg)  scale(1.2); animation-duration: 48s; opacity:.55; }
+.aurora i:nth-child(3){ transform: rotate(180deg) scale(1.4); animation-duration: 60s; opacity:.35; }
+.aurora i:nth-child(4){ transform: rotate(270deg) scale(1.1); animation-duration: 52s; opacity:.5;  }
+
+@keyframes swirl {
+  0%   { filter: hue-rotate(0deg);   transform: rotate(0turn) scale(1.2); }
+  50%  { filter: hue-rotate(60deg);  transform: rotate(.5turn) scale(1.25); }
+  100% { filter: hue-rotate(120deg); transform: rotate(1turn) scale(1.2); }
+}
+
+/* ===== Canvas (particle trail) ===== */
+#fx { position: fixed; inset: 0; z-index: 5; }
+
+/* ===== Comet (CSS core & cursor ring) ===== */
+.comet { position: fixed; left: 50vw; top: 50vh; transform: translate(-50%,-50%); pointer-events: none; z-index: 10; }
+.core {
+  width: var(--size); height: var(--size); border-radius: 50%; position: relative;
+  background:
+    radial-gradient(circle at 50% 50%, #fff 0 22%, hsl(var(--h) 95% 65%) 36%, transparent 60%),
     conic-gradient(from 0deg,
-      hsl(var(--h) 95% 60% / .35),
-      hsl(calc(var(--h)+60) 95% 60% / .35),
-      hsl(calc(var(--h)+120)95% 60% / .35),
-      hsl(calc(var(--h)+180)95% 60% / .35),
-      hsl(calc(var(--h)+240)95% 60% / .35),
-      hsl(calc(var(--h)+300)95% 60% / .35),
-      hsl(calc(var(--h)+360)95% 60% / .35));
+      hsl(var(--h) 95% 60% / .38),
+      hsl(calc(var(--h)+60) 95% 60% / .38),
+      hsl(calc(var(--h)+120)95% 60% / .38),
+      hsl(calc(var(--h)+180)95% 60% / .38),
+      hsl(calc(var(--h)+240)95% 60% / .38),
+      hsl(calc(var(--h)+300)95% 60% / .38),
+      hsl(calc(var(--h)+360)95% 60% / .38));
   box-shadow:
-    0 0 20px hsl(var(--h) 95% 60% / .40),
-    0 0 40px hsl(calc(var(--h)+180) 95% 60% / .30);
-  isolation:isolate;
+    0 0 16px hsl(var(--h) 95% 60% / .55),
+    0 0 34px hsl(calc(var(--h)+180) 95% 60% / .35);
+  animation: breathe 1.6s ease-in-out infinite;
+  isolation: isolate;
 }
 .core::before, .core::after{
-  content:""; position:absolute; inset:-45% -45%; border-radius:50%;
+  content:""; position:absolute; inset:-40% -40%; border-radius:50%;
   background: radial-gradient(60% 60% at 35% 30%, #fff6, transparent 60%);
-  mix-blend-mode:screen; filter: blur(10px);
+  mix-blend-mode: screen; filter: blur(10px);
 }
 .core::after{
   inset:-15% -15%;
-  background:
-    radial-gradient(40% 40% at 70% 70%, #fff4, transparent 70%),
-    conic-gradient(from 30deg,
-      transparent 0 40deg, #fff2 0 60deg, transparent 0 360deg);
+  background: radial-gradient(40% 40% at 70% 70%, #fff4, transparent 70%);
   filter: blur(6px);
 }
-.trail{ position:fixed; width:var(--size); height:var(--size); border-radius:50%; pointer-events:none;
-  transform:translate(-50%,-50%); }
-.trail > i{
-  position:absolute; width:100%; height:100%; border-radius:50%; left:0; top:0;
-  background:
-    radial-gradient(circle at 50% 50%, hsl(var(--h) 95% 65% / .55) 0 30%, transparent 60%),
-    conic-gradient(from 0deg,
-      hsl(var(--h) 95% 60% / .20),
-      hsl(calc(var(--h)+120)95% 60% / .18),
-      hsl(calc(var(--h)+240)95% 60% / .18),
-      hsl(calc(var(--h)+360)95% 60% / .18));
-  filter: blur(4px) saturate(1.15);
-  transform: scale(var(--k,1)) rotate(var(--r,0deg));
-  opacity: var(--o,.6);
-  box-shadow:
-    0 0 30px hsl(var(--h) 95% 60% / .25),
-    0 0 60px hsl(calc(var(--h)+200) 95% 60% / .15);
+@keyframes breathe {
+  0%,100% { transform: scale(1.00); }
+  50%     { transform: scale(1.07); }
 }
-.hud{ position:fixed; right:12px; bottom:10px; color:#cbd3ffcc; font-size:12px; letter-spacing:.2px; user-select:none; }
-.hud strong{ color:#fff }
-@media (prefers-reduced-motion:reduce){
-  .core::before, .core::after{ display:none; }
+
+.ring {
+  position: absolute; left: 50%; top: 50%;
+  width: var(--ring); height: var(--ring); border-radius: 50%;
+  transform: translate(-50%,-50%);
+  box-shadow:
+    inset 0 0 0 2px hsl(calc(var(--h)+200) 90% 60% / .3),
+    inset 0 0 0 6px hsl(calc(var(--h)+ 40) 90% 60% / .18),
+    inset 0 0 26px 10px hsl(calc(var(--h)+  0) 90% 60% / .12);
+  filter: blur(.2px);
+  animation: halo 2.4s ease-in-out infinite;
+}
+@keyframes halo {
+  0%,100% { transform: translate(-50%,-50%) scale(1.00); opacity: .9; }
+  50%     { transform: translate(-50%,-50%) scale(1.08); opacity: .7; }
+}
+
+/* 안내 */
+.hud {
+  position: fixed; right: 12px; bottom: 10px; z-index: 20;
+  color: #cbd3ffcc; font-size: 12px; letter-spacing: .2px; user-select: none;
+}
+.hud strong { color: #fff; }
+
+/* 접근성: 모션 감소 */
+@media (prefers-reduced-motion: reduce){
+  .aurora i { animation-duration: 120s; }
+  .core { animation: none; }
+  .ring { animation: none; }
 }
