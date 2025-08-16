@@ -3,11 +3,20 @@
 body{margin:0;background:#060810;overflow:hidden;cursor:none;font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans KR",Arial;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
 .back-link{position:fixed;left:12px;top:12px;text-decoration:none;z-index:30}
 .aurora{position:fixed;inset:-20vmax;filter:blur(18px) saturate(1.15);z-index:0}
-.aurora i{position:absolute;inset:0;opacity:.45;mix-blend-mode:screen;animation:swirl 42s linear infinite;background:
-conic-gradient(from 0deg at 50% 50%,
-hsl(calc(var(--h)+0) 90% 60%/.08),hsl(calc(var(--h)+40) 90% 60%/.10),
-hsl(calc(var(--h)+80) 90% 60%/.12),hsl(calc(var(--h)+120) 90% 60%/.10),
-hsl(calc(var(--h)+160) 90% 60%/.08),transparent 70%)}
+.aurora i {
+  position: absolute; inset: 0; opacity: .48; mix-blend-mode: screen; animation: swirl 42s linear infinite;
+  background:
+    conic-gradient(from 0deg at 50% 50%,
+      hsl(calc(var(--h) +   0)  95% 60% / .08),
+      hsl(calc(var(--h) +  30)  95% 62% / .10),
+      hsl(calc(var(--h) +  70)  95% 64% / .12),
+      hsl(calc(var(--h) + 120)  95% 66% / .12),
+      hsl(calc(var(--h) + 180)  95% 64% / .10),
+      hsl(calc(var(--h) + 240)  95% 62% / .08),
+      hsl(calc(var(--h) + 300)  95% 60% / .08),
+      transparent 72%),
+    radial-gradient(120% 120% at 70% 30%, hsl(calc(var(--h)+210) 90% 55% / .08), transparent 60%);
+}
 .aurora i:nth-child(1){transform:rotate(0deg) scale(1.3);animation-duration:56s}
 .aurora i:nth-child(2){transform:rotate(90deg) scale(1.2);animation-duration:48s;opacity:.55}
 .aurora i:nth-child(3){transform:rotate(180deg) scale(1.4);animation-duration:60s;opacity:.35}
