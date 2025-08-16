@@ -3,22 +3,20 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Prism Comet — Aurora Ribbon Edition</title>
-  <link rel="stylesheet" href="../../assets/css/base.css" />
-  <link rel="stylesheet" href="style.css" />
+  <title>Prism Comet — Aurora (hardened)</title>
+  <link rel="stylesheet" href="../../assets/css/base.css?v=aurora2" />
+  <link rel="stylesheet" href="style.css?v=aurora2" />
 </head>
 <body>
   <a href="../../index.html" class="badge back-link">← Gallery</a>
 
   <!-- 오로라 리본 (CSS 애니메이션) -->
-  <div class="aurora">
-    <i></i><i></i><i></i><i></i>
-  </div>
+  <div class="aurora"><i></i><i></i><i></i><i></i></div>
 
-  <!-- 파티클 캔버스 (꼬리/스파크) -->
+  <!-- 파티클 캔버스 -->
   <canvas id="fx"></canvas>
 
-  <!-- 프리즘 코어 & 커서 링 -->
+  <!-- 프리즘 코어 & 링 -->
   <div class="comet">
     <div class="core"></div>
     <div class="ring"></div>
@@ -26,6 +24,7 @@
 
   <div class="hud">click = burst • <strong>Prism Comet — Aurora</strong></div>
 
-  <script src="script.js"></script>
+  <!-- defer + 캐시버스터 -->
+  <script src="script.js?v=aurora2" defer></script>
 </body>
 </html>
