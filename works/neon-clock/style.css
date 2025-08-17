@@ -48,34 +48,61 @@ body{
 .group{ display:flex; gap:min(1.8vmin,16px) }
 
 /* ===== 핵심: 한 자리 카드 구조 ===== */
+/* 카드 높이 변수를 명시: 모든 자식이 이 높이를 기준으로 반씩 잘립니다 */
 .flip{
-  position:relative; width:clamp(40px, 14vmin, 150px); height:clamp(54px, 18vmin, 190px);
-  perspective: 900px; isolation:isolate; /* 겹침/잔상 방지 */
-}
-.panel{
-  position:absolute; inset:0; border-radius:14px; overflow:hidden; z-index:0;
-  background:linear-gradient(180deg,#111826,#0a0f19); border:1px solid #ffffff10;
-  box-shadow: inset 0 -60px 120px #0006, inset 0 40px 80px #fff1;
+  --H: clamp(54px, 18vmin, 190px);
+  position: relative;
+  width: clamp(40px, 14vmin, 150px);
+  height: var(--H);
+  perspective: 900px;
+  isolation: isolate; /* 겹침/잔상 방지 */
 }
 
-/* 각 절반 + 뒤집기용 절반 : 정확히 "절반 높이"만 보이게 */
+/* 각 절반은 '정확히' 반 높이 + overflow:hidden */
 .half, .back-top, .back-bot{
-  position:absolute; left:0; width:100%; height:50%;
-  display:grid; place-items:center; overflow:hidden;
-  font-weight:800; letter-spacing:.04em; color:#f6f7ff; text-shadow: var(--glow-strong);
-  backface-visibility: hidden; transform-style: preserve-3d;
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 50%;
+  overflow: hidden;
+
+  /* 글꼴/광채만 남기고 센터링은 제거(숫자 배치는 .val에서 절대위치로 제어) */
+  font-weight: 800;
+  letter-spacing: .04em;
+  color: #f6f7ff;
+  text-shadow: var(--glow-strong);
+  backface-visibility: hidden;
+  transform-style: preserve-3d;
 }
-.top{ top:0; z-index:4; border-bottom:1px solid #ffffff14; }
-.bot{ bottom:0; z-index:1; }
-.back-top{ top:0; z-index:3; transform-origin: bottom; transform: rotateX(180deg); border-bottom:1px solid #ffffff14; }
-.back-bot{ bottom:0; z-index:2; transform-origin: top;   transform: rotateX(-180deg); }
 
-/* 숫자 타이포는 중앙 정렬 + 크게 */
-.val{ font-size: clamp(32px, 12vmin, 140px); line-height: 1; }
+/* z-순서 (윗면이 항상 맨 위) */
+.top{ top: 0; z-index: 4; border-bottom: 1px solid #ffffff14; }
+.bot{ bottom: 0; z-index: 1; }
+.back-top{ top: 0; z-index: 3; transform-origin: bottom; transform: rotateX(180deg); border-bottom: 1px solid #ffffff14; }
+.back-bot{ bottom: 0; z-index: 2; transform-origin: top;   transform: rotateX(-180deg); }
 
-/* 플립 애니메이션(겹침 방지용 both) */
+/* 숫자 자체는 카드 전체 높이(--H)로 잡고 절대 위치시킵니다 */
+.val{
+  position: absolute;
+  left: 0; width: 100%;
+  height: var(--H);
+  line-height: var(--H);
+  font-size: clamp(32px, 12vmin, 140px);
+  text-align: center;
+}
+
+/* 위쪽 절반: 카드의 '윗부분'이 보이게 */
+.top .val,
+.back-top .val { top: 0; }
+
+/* 아래쪽 절반: 카드를 반 장 위로 올려서 '아랫부분'만 보이게 */
+.bot .val,
+.back-bot .val { top: calc(-0.5 * var(--H)); }
+
+/* 플립 애니메이션은 그대로 */
 .flip.play .top{      animation: flipTop var(--flip-speed) var(--flip-ease) both; }
 .flip.play .back-bot{ animation: flipBot var(--flip-speed) var(--flip-ease) both; }
+
 
 @keyframes flipTop{
   0%   { transform: rotateX(0deg); }
