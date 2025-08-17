@@ -143,3 +143,114 @@ body{
 @media (prefers-reduced-motion:reduce){
   :root{ --t-top:.6s; --t-bot:.7s; }
 }
+
+/* ==================== Paper Flip Mode ==================== */
+/* 활성화: <html class="paper"> ... */
+:root{
+  /* 종이 재질/물리감 */
+  --paper-color-top: #0f1424;       /* 위 장 색감 */
+  --paper-color-bot: #0b111d;       /* 아래 장 색감 */
+  --paper-edge-hi:  #ffffff18;      /* 가장자리 하이라이트 */
+  --paper-edge-lo:  #00000035;      /* 가장자리 그림자 */
+  --hinge-line:     #ffffff14;      /* 중앙 힌지선 색 */
+
+  --t-top: .30s;                    /* 위판 더 빠르게 */
+  --t-bot: .64s;                    /* 아래판 더 느리게 */
+  --ease-top: cubic-bezier(.3,.65,.2,1.15);
+  --ease-bot: cubic-bezier(.16,.84,.22,1);
+
+  --flip-delay-bot: .08s;           /* 아래판 시작 지연 */
+}
+
+/* 패널 표면을 종이처럼: 위/아래 절반 색을 살짝 다르게 */
+.paper .panel{
+  background:
+    linear-gradient(180deg, var(--paper-color-top), var(--paper-color-bot));
+  border-radius: 14px;
+  position: relative;
+}
+
+/* 중앙 힌지 얇은 선 */
+.paper .panel::before{
+  content:"";
+  position:absolute; left:0; right:0; top:50%; height:1px; transform:translateY(-.5px);
+  background: linear-gradient(90deg, transparent, var(--hinge-line), transparent);
+  pointer-events:none;
+}
+
+/* 카드 가장자리 하이라이트/그림자(종이 두께) */
+.paper .panel::after{
+  content:"";
+  position:absolute; inset:0; pointer-events:none;
+  border-radius:14px;
+  box-shadow:
+    inset 0 1px 0 var(--paper-edge-hi),
+    inset 0 -1px 0 var(--paper-edge-lo);
+  opacity:.8;
+}
+
+/* 각 절반의 표면에도 미세한 기울기/광택 */
+.paper .top::before,
+.paper .bot::before,
+.paper .back-top::before,
+.paper .back-bot::before{
+  content:""; position:absolute; inset:0; pointer-events:none;
+  background: radial-gradient(120% 80% at 50% -10%, #ffffff10, transparent 55%),
+              linear-gradient(180deg, #ffffff05, #00000018);
+  mix-blend-mode: screen; opacity:.6;
+}
+
+/* 숫자 대비 조금 낮추고 종이 위에 잉크처럼 보이게 */
+.paper .val{
+  text-shadow: none;
+  color: #f2f4ff;
+}
+
+/* ===== 종이 플립 동안의 레이어/그림자 ===== */
+.paper .back-top, .paper .back-bot{ opacity:0; will-change: transform, opacity; }
+
+/* top은 항상 보인다(위판) — 아래판(bot)은 잠시 숨김 */
+.paper .flip.play .top{
+  animation: flipTopPaper var(--t-top) var(--ease-top) both;
+  filter: drop-shadow(0 10px 12px rgba(0,0,0,.35)); /* 위판이 아래판에 그림자 */
+}
+.paper .flip.play .bot{ opacity:0; }
+
+/* 새 아래판(back-bot)은 조금 늦게 올라오며 두께감을 준다 */
+.paper .flip.play .back-bot{
+  opacity:1;
+  animation: flipBotPaper var(--t-bot) var(--ease-bot) both;
+  animation-delay: var(--flip-delay-bot);
+  box-shadow: 0 -8px 18px rgba(0,0,0,.28) inset; /* 아래쪽 엣지 어둡게 */
+}
+
+/* 미세한 종이 두께(엣지 라인) */
+.paper .top, .paper .back-bot{
+  outline: 1px solid #00000010;
+  box-shadow:
+    inset 0 -1px 0 var(--paper-edge-lo),
+    inset 0  1px 0 var(--paper-edge-hi);
+}
+
+/* ====== 종이 플립 키프레임: 살짝 휘어지고 스냅감 ====== */
+@keyframes flipTopPaper{
+  0%   { transform: rotateX(0deg) translateZ(0.001px) skewX(0deg); filter:brightness(1); }
+  40%  { transform: rotateX(-70deg) translateZ(0.001px) skewX(-1deg); filter:brightness(.96); }
+  80%  { transform: rotateX(-180deg) translateZ(0.001px) skewX(-2deg); filter:brightness(.88); }
+  100% { transform: rotateX(-180deg) translateZ(0.001px) skewX(-2deg); filter:brightness(.88); }
+}
+@keyframes flipBotPaper{
+  0%   { transform: rotateX(-180deg) translateZ(0.001px) skewX(2deg);   filter:brightness(.85); }
+  15%  { transform: rotateX(-170deg) translateZ(0.001px) skewX(1deg);   filter:brightness(.9); }
+  80%  { transform: rotateX(-10deg)  translateZ(0.001px) skewX(.3deg);  filter:brightness(.98); }
+  100% { transform: rotateX(0deg)     translateZ(0.001px) skewX(0deg);  filter:brightness(1); }
+}
+
+/* 자리별 미세 지연(폭포 효과를 더 크게 하고 싶다면 늘려도 됨) */
+.paper .group:nth-of-type(1) .flip{ transition-delay: 0ms; }
+.paper .group:nth-of-type(2) .flip{ transition-delay: 10ms; }
+.paper .group:nth-of-type(3) .flip{ transition-delay: 20ms; }
+.paper .group:nth-of-type(4) .flip{ transition-delay: 30ms; }
+.paper .group:nth-of-type(5) .flip{ transition-delay: 40ms; }
+.paper .group:nth-of-type(6) .flip{ transition-delay: 50ms; }
+
