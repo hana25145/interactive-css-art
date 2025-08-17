@@ -4,7 +4,7 @@
   const clock = document.getElementById('clock');
   const dateEl= document.getElementById('date');
   const pill  = document.getElementById('pill');
-
+  root.classList.add('paper');
   if (clock.dataset.built === "1") return;
   clock.dataset.built = "1";
 
