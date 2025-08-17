@@ -113,6 +113,26 @@ body{
   100% { transform: rotateX(0deg); }
 }
 
+/* --- 겹침 방지: 애니 중에는 back-bot만 보이게 --- */
+.back-top, .back-bot { 
+  opacity: 0; 
+  will-change: transform, opacity; 
+}
+
+.flip.play .back-bot { 
+  opacity: 1;   /* 새 값이 올라오는 절반만 보이게 */
+}
+
+.flip.play .bot { 
+  opacity: 0;   /* 기존 아래 절반은 잠깐 숨김 */
+}
+
+/* (선택) 미세한 경계선/빛샘 줄이기 */
+.top, .back-bot { 
+  transform: translateZ(0.001px); 
+}
+
+
 /* 날짜 + HUD */
 .date{ margin-top:16px; font-size: clamp(12px, 2.3vmin, 16px); letter-spacing:.04em; opacity:.85; filter: drop-shadow(var(--glow-soft)); }
 .hud{ position:fixed; right:12px; bottom:10px; display:grid; gap:6px; z-index:30; }
